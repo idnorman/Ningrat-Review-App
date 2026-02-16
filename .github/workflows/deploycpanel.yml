@@ -1,0 +1,63 @@
+name: Publish Website to CPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to CPanel
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: List files (debug)
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files to be uploaded:"
+          ls -la
+
+      - name: Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env*
+            **/.env.example
+            **/.github/**
+            **/.vscode/**
+            **/.idea/**
+            **/tests/**
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/sessions/**
+            **/storage/framework/testing/**
+            **/storage/debugbar/**
+            **/composer.lock
+            **/composer.json
+            **/.gitignore
+            **/README.md
+            **/phpunit.xml
+            **/.editorconfig
+            **/.styleci.yml
+            **/webpack.mix.js
+            **/package.json
+            **/package-lock.json
+            **/yarn.lock
+            **/.php-cs-fixer.dist.php
+            **/.php-cs-fixer.cache
+            **/phpstan.neon
+            **/phpunit.xml.dist
